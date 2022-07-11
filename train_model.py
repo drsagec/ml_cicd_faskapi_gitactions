@@ -38,7 +38,7 @@ cat_features = [
     "race",
     "sex",
     "native-country",
-    ]
+]
 
 core_filename = "logs/core_script_results.log"
 # setting up log file
@@ -178,7 +178,7 @@ def train_results(
     best_cross_val_scores_mean = "{}"
     rf_report = "{}"
 
-    data_loc = f"data/{input_csv_filename}"
+    data_loc = f"./data/{input_csv_filename}"
     orig_data_df, success, message = import_data(data_loc)
 
     if success:
@@ -335,11 +335,11 @@ def train_results(
             pd.DataFrame([classification_scores]).to_csv(
                 "results/classification_scores.csv")
             logging.info(
-                f"\tsaved results/classification_scores.csv ")
+                "\tsaved results/classification_scores.csv ")
             pd.DataFrame([best_classification_scores]).to_csv(
                 "results/best_classification_scores.csv")
             logging.info(
-                f"\tsaved results/best_classification_scores.csv ")
+                "\tsaved results/best_classification_scores.csv ")
 
         except Exception as Excp:
             logging.error(
@@ -347,15 +347,12 @@ def train_results(
 
         # Models predictions
         logging.info("-------------  Models predictions  ------------")
+
         try:
             lr_yprad = lr.predict(X_test)
             knn_yprad = knn.predict(X_test)
-            dt_yprad = dt.predict(X_test)
             rf_yprad = rf.predict(X_test)
-            adb_yprad = adb.predict(X_test)
-            svm_yprad = svm.predict(X_test)
-            gdboost_yprad = gdboost.predict(X_test)
-            xgboost_yprad = xgboost.predict(X_test)
+
         except Exception as Excp:
             logging.error(
                 f"\tFailed creating predictions. {str(Excp)}")
@@ -373,7 +370,7 @@ def train_results(
                 'svm': roc_auc_score(y_test, svm.predict(X_test)),
                 'gdboost': roc_auc_score(y_test, gdboost.predict(X_test)),
                 'xgboost': roc_auc_score(y_test, xgboost.predict(X_test)),
-                }
+            }
 
             best_roc_auc_scores = {
                 'best_model_name': max(
@@ -392,11 +389,11 @@ def train_results(
 
             pd.DataFrame([roc_auc_scores]).to_csv("results/roc_auc_scores.csv")
             logging.info(
-                f"\tsaved results at results/roc_auc_scores.csv ")
+                "\tsaved results at results/roc_auc_scores.csv ")
             pd.DataFrame([best_roc_auc_scores]).to_csv(
                 "results/best_roc_auc_scores.csv")
             logging.info(
-                f"\tsaved at results/best_roc_auc_scores.csv ")
+                "\tsaved at results/best_roc_auc_scores.csv ")
 
         except Exception as Excp:
             logging.error(
@@ -409,31 +406,29 @@ def train_results(
             rf_report = classification_report(
                 y_test, rf_yprad, output_dict=True)
             logging.info(
-                f"Random forest classif report \n {rf_report}")
+                "Random forest classif report \n {rf_report}")
             pd.DataFrame(rf_report).to_csv("results/rf_report.csv")
             logging.info(
-                f"\tsaved at results/rf_report.csv ")
+                "\tsaved at results/rf_report.csv ")
 
-           lr_report = classification_report(
+            lr_report = classification_report(
                 y_test, lr_yprad, output_dict=True)
             logging.info(
-                f"Random forest classif report \n {lr_report}")
+                "Random forest classif report \n {lr_report}")
             pd.DataFrame(lr_report).to_csv("results/lr_report.csv")
             logging.info(
-                f"\tsaved at results/lr_report.csv ")
-            
-           knn_report = classification_report(
+                "\tsaved at results/lr_report.csv")
+            knn_report = classification_report(
                 y_test, knn_yprad, output_dict=True)
             logging.info(
                 f"Random forest classif report \n {knn_report}")
             pd.DataFrame(knn_report).to_csv("results/knn_report.csv")
             logging.info(
-                f"\tsaved at results/knn_report.csv ")
-            
+                "\tsaved at results/knn_report.csv")
             logging.info(
-                f"\tWe didn't create classf report for:")
+                "\tWe didn't create classf report for:")
             logging.info(
-                f"\tdt, adb, svm, gdboost, xgboost. For future EDA")
+                "\tdt, adb, svm, gdboost, xgboost. For future EDA")
 
         except Exception as Excp:
             logging.error(
@@ -455,8 +450,8 @@ def train_results(
                     dt, X, y, cv=5).mean(), 'rf': cross_val_score(
                     rf, X, y, cv=5).mean(), 'adb': cross_val_score(
                         adb, X, y, cv=5).mean(), 'svm': cross_val_score(
-                            svm, X, y, cv=5).mean(), 'gdboost': cross_val_score(
-                                gdboost, X, y, cv=5).mean(), 'xgboost': cross_val_score(
+                            svm, X, y, cv=5).mean(), 'gdbst': cross_val_score(
+                                gdboost, X, y, cv=5).mean(), 'xgbst': cross_val_score(
                                     xgboost, X, y, cv=5).mean(), }
 
             best_cross_val_scores_mean = {
@@ -466,10 +461,12 @@ def train_results(
                 'best_model_score': min(
                     cross_val_scores_mean.values())}
             logging.info(
-                f"\tBest  model is {best_cross_val_scores_mean['best_model_name']}")
+                f"\tBest  model is \
+                    {best_cross_val_scores_mean['best_model_name']}")
 
             logging.info(
-                f"\t\n\t with {best_cross_val_scores_mean['best_model_score']}")
+                f"\t\n\t with \
+                    {best_cross_val_scores_mean['best_model_score']}")
 
             logging.info(
                 f"\tAll cross val scores mean:  {cross_val_scores_mean}")
@@ -477,14 +474,19 @@ def train_results(
             pd.DataFrame([cross_val_scores_mean]).to_csv(
                 "results/cross_val_scores_mean.csv")
             logging.info(
-                f"\tsaved results at results/cross_val_scores_mean.csv ")
+                "\tsaved results at \
+                    results/cross_val_scores_mean.csv ")
             pd.DataFrame([best_cross_val_scores_mean]).to_csv(
                 "results/best_cross_val_scores_mean.csv")
             logging.info(
-                f"\tsaved best results at results/best_cross_val_scores_mean.csv ")
+                "\tsaved best results at\
+                     results/best_cross_val_scores_mean.csv ")
 
         except Exception as Excp:
             logging.error(
                 f"\tFailed creating Kfold Cross val. {str(Excp)}")
 
-    return classification_scores, best_classification_scores, roc_auc_scores, best_roc_auc_scores, cross_val_scores_mean, best_cross_val_scores_mean, rf_report
+    return \
+        classification_scores, best_classification_scores, \
+        roc_auc_scores, best_roc_auc_scores, cross_val_scores_mean, \
+        best_cross_val_scores_mean, rf_report

@@ -12,7 +12,7 @@ import pandas as pd
 import constants
 import test_data
 
-RETRAIN = False
+RETRAIN = True
 print("Running Tests - please wait ... ")
 
 
@@ -258,16 +258,17 @@ def test_post_modelinfer_data2():
 
 def test_post_modelinfer_inputdata_data4():
     """
+    NEG -Testing 'POST', wrong input file
     test case to validate input file if file exists,
-        and validate passed params and saved files
+        and validate passed params
     input:
         POST Method from past api
     outputs:
-        saves all models in model folder
-        saves all results (scores/reports) in results folder
+        doesn't saves models in model folder
+        doesn't saves results (scores/reports)
     """
     data = test_data.test_post_data4
-    msg = "test data ={data}"
+    msg = f"test data ={data}"
     if constants.ENV == 'DEV':
         post_modelinfer_url = constants.post_modelinfer_url_dev
 
@@ -277,7 +278,35 @@ def test_post_modelinfer_inputdata_data4():
     else:
         print("Env flag is set wrong in constants.py file")
 
-    msg = "{msg}\nTesting input file"
+    # removing if exists- NEG test
+    results = [
+        "classification_scores.csv",
+        "best_classification_scores.csv",
+        "roc_auc_scores.csv",
+        "best_roc_auc_scores.csv",
+        "cross_val_scores_mean.csv",
+        "best_cross_val_scores_mean.csv",
+        "rf_report.csv"]
+
+    for resul in results:
+        resul_pth = f"results/{resul}"
+        if os.path.exists(resul_pth):
+            os.remove(resul_pth)
+
+    models = [
+        "knn.pkl",
+        "dt.pkl",
+        "rf.pkl",
+        "adb.pkl",
+        "svm.pkl",
+        "gdboost.pkl",
+        "xgboost.pkl"]
+
+    for model in models:
+        model_pth = f"models/{model}"
+        if os.path.exists(model_pth):
+            os.remove(model_pth)
+    msg = f"{msg}\nTesting input file"
     file_pth = f"data/{data['input_csv_filename']}"
     try:
         assert os.path.exists(file_pth)
@@ -314,54 +343,43 @@ def test_post_modelinfer_inputdata_data4():
             else:
                 msg = f"{msg}\n\tPASSED: {col} found"
 
-        msg = f"{msg}\nTesting input parameters "
+        msg = f"{msg}\nInput parameters "
         if data['test_size'] in [0, None]:
-            msg = f"{msg}\n\tFAILED: wrong test_size {data['test_size']}"
+            msg = f"{msg}\n\t wrong test_size {data['test_size']}"
             FALED = True
         else:
-            msg = f"{msg}\n\tPASSED: test_size is good"
+            msg = f"{msg}\n\t test_size is good"
 
         if data['random_state'] in [0, None]:
-            msg = f"{msg}\n\tFAILED: wrong random_state {data['random_state']}"
+            msg = f"{msg}\n\t wrong random_state {data['random_state']}"
             FALED = True
         else:
-            msg = f"{msg}\n\tPASSED: random_state is good"
+            msg = f"{msg}\n\t random_state is good"
 
         if data['n_splits'] in [0, None]:
-            msg = f"{msg}\n\tFAILED: wrong n_splits {data['n_splits']} "
+            msg = f"{msg}\n\t wrong n_splits {data['n_splits']} "
             FALED = True
         else:
-            msg = f"{msg}\n\tPASSED: n_splits is good"
+            msg = f"{msg}\n\t n_splits is good"
 
         if data['shuffle'] not in [True, False]:
-            msg = f"{msg}\n\tFAILED: wrong shuffle{data['shuffle']} "
+            msg = f"{msg}\n\t wrong shuffle{data['shuffle']} "
             FALED = True
         else:
-            msg = f"{msg}\n\tPASSED: shuffle is good"
+            msg = f"{msg}\n\t shuffle is good"
 
         if data['cv'] in [0, None]:
-            msg = f"{msg}\n\tFAILED: wrong cv {data['cv']} "
+            msg = f"{msg}\n\t wrong cv {data['cv']} "
             FALED = True
         else:
-            msg = f"{msg}\n\tPASSED: cv is good"
+            msg = f"{msg}\n\t cv is good"
 
         if FALED:
-            results = [
-                "classification_scores.csv",
-                "best_classification_scores.csv",
-                "roc_auc_scores.csv",
-                "best_roc_auc_scores.csv",
-                "cross_val_scores_mean.csv",
-                "best_cross_val_scores_mean.csv",
-                "rf_report.csv"]
-            for resul in results:
-                resul_pth = f"results/{resul}"
-                if os.path.exists(resul_pth):
-                    os.remove(resul_pth)
-
             response = requests.post(post_modelinfer_url, json=data)
-            msg = f"{msg}\n\t{response} from post {post_modelinfer_url}"
-            msg = f"{msg}\n\n\tAs above params/file filed- results not saved:"
+            msg = f"{msg}\n\t{response.json()} \
+                from post {post_modelinfer_url}"
+            msg = f"{msg}\n\n\tAs above params/file filed- \
+                results not saved:"
             for resul in results:
                 resul_pth = f"results/{resul}"
                 try:
@@ -378,8 +396,17 @@ def test_post_modelinfer_inputdata_data4():
 
 
 def test_post_modelinfer_inputdata_data3():
+    """
+    NEG -Testing 'POST', correct input file
+        but wrong  passed params
+    input:
+        POST Method from past api
+    outputs:
+        doesn't saves  models in model folder
+        doesn't saves  results (scores/reports)
+    """
     data = test_data.test_post_data3
-    msg = "test data ={data}"
+    msg = f"test data ={data}"
     if constants.ENV == 'DEV':
         post_modelinfer_url = constants.post_modelinfer_url_dev
 
@@ -389,7 +416,36 @@ def test_post_modelinfer_inputdata_data3():
     else:
         print("Env flag is set wrong in constants.py file")
 
-    msg = "{msg}\nTesting input file"
+    # removing if exits for NEG test
+    results = [
+        "classification_scores.csv",
+        "best_classification_scores.csv",
+        "roc_auc_scores.csv",
+        "best_roc_auc_scores.csv",
+        "cross_val_scores_mean.csv",
+        "best_cross_val_scores_mean.csv",
+        "rf_report.csv"]
+
+    for resul in results:
+        resul_pth = f"results/{resul}"
+        if os.path.exists(resul_pth):
+            os.remove(resul_pth)
+
+    models = [
+        "knn.pkl",
+        "dt.pkl",
+        "rf.pkl",
+        "adb.pkl",
+        "svm.pkl",
+        "gdboost.pkl",
+        "xgboost.pkl"]
+
+    for model in models:
+        model_pth = f"models/{model}"
+        if os.path.exists(model_pth):
+            os.remove(model_pth)
+
+    msg = f"{msg}\nTesting input file"
     file_pth = f"data/{data['input_csv_filename']}"
     try:
         assert os.path.exists(file_pth)
@@ -426,55 +482,45 @@ def test_post_modelinfer_inputdata_data3():
             else:
                 msg = f"{msg}\n\tPASSED: {col} found"
 
-        msg = f"{msg}\nTesting input parameters "
+        msg = f"{msg}\nInput parameters "
         if data['test_size'] in [0, None]:
-            msg = f"{msg}\n\tFAILED: wrong test_size can {data['test_size']}"
+            msg = f"{msg}\n\t wrong test_size {data['test_size']}"
             FALED = True
         else:
-            msg = f"{msg}\n\tPASSED: test_size is good"
+            msg = f"{msg}\n\t test_size is good"
 
         if data['random_state'] in [0, None]:
-            msg = f"{msg}\n\tFAILED: wrong random_state {data['random_state']}"
+            msg = f"{msg}\n\t wrong random_state {data['random_state']}"
             FALED = True
         else:
-            msg = f"{msg}\n\tPASSED: random_state is good"
+            msg = f"{msg}\n\t random_state is good"
 
         if data['n_splits'] in [0, None]:
-            msg = f"{msg}\n\tFAILED: wrong n_splits {data['n_splits']} "
+            msg = f"{msg}\n\t wrong n_splits {data['n_splits']} "
             FALED = True
         else:
-            msg = f"{msg}\n\tPASSED: n_splits is good"
+            msg = f"{msg}\n\t n_splits is good"
 
         if data['shuffle'] not in [True, False]:
-            msg = f"{msg}\n\tFAILED: wrong shuffle {data['shuffle']} "
+            msg = f"{msg}\n\t wrong shuffle {data['shuffle']} "
             FALED = True
         else:
-            msg = f"{msg}\n\tPASSED: shuffle is good"
+            msg = f"{msg}\n\t shuffle is good"
 
         if data['cv'] in [0, None]:
-            msg = f"{msg}\n\tFAILED: wrong cv {data['cv']} "
+            msg = f"{msg}\n\t wrong cv {data['cv']} "
             FALED = True
         else:
-            msg = f"{msg}\n\tPASSED: cv is good"
+            msg = f"{msg}\n\t cv is good"
 
         if FALED:
-            results = [
-                "classification_scores.csv",
-                "best_classification_scores.csv",
-                "roc_auc_scores.csv",
-                "best_roc_auc_scores.csv",
-                "cross_val_scores_mean.csv",
-                "best_cross_val_scores_mean.csv",
-                "rf_report.csv"]
-            for resul in results:
-                resul_pth = f"results/{resul}"
-                if os.path.exists(resul_pth):
-                    os.remove(resul_pth)
-
             response = requests.post(post_modelinfer_url, json=data)
-            msg = f"{msg}\n\t{response} from post {post_modelinfer_url}"
+            msg = f"{msg}\n\t{response.json()} from \
+                post {post_modelinfer_url}"
 
-            msg = f"{msg}\n\n\tabove params/file failed- results not saved:"
+            msg = f"{msg}\n\n\tabove params/file failed- \
+                results not saved:"
+
             for resul in results:
                 resul_pth = f"results/{resul}"
                 try:
@@ -505,6 +551,38 @@ def run_tests(RETRAIN=False):
     message = f"{message}\n\n2. NEG -Testing 'GET' home, wrong message"
     msg, data = test_get_home_data2()
     message = f"{message}\n{msg}"
+    if not RETRAIN:
+        models = [
+            "knn.pkl",
+            "dt.pkl",
+            "rf.pkl",
+            "adb.pkl",
+            "svm.pkl",
+            "gdboost.pkl",
+            "xgboost.pkl"]
+
+        for model in models:
+            model_pth = f"models/{model}"
+            if not os.path.exists(model_pth):
+                RETRAIN = True
+                message = f"{message}\n{model_pth}, doesn't exist\
+                     retraining the models again"
+
+        results = [
+            "classification_scores.csv",
+            "best_classification_scores.csv",
+            "roc_auc_scores.csv",
+            "best_roc_auc_scores.csv",
+            "cross_val_scores_mean.csv",
+            "best_cross_val_scores_mean.csv",
+            "rf_report.csv"]
+        for resul in results:
+            resul_pth = f"results/{resul}"
+            if not os.path.exists(resul_pth):
+                RETRAIN = True
+                message = f"{message}\n{resul_pth}, doesn't exist\
+                     retraining the models again"
+
     if RETRAIN:
         message = f"{message}\n3. POS -Testing 'POST' Train, save results"
         msg, data = test_post_modelinfer_data1()
@@ -512,6 +590,7 @@ def run_tests(RETRAIN=False):
         message = f"{message}\n4. POS -Testing 'POST' Train, save results"
         msg, data = test_post_modelinfer_data2()
         message = f"{message}\n{msg}"
+
     message = f"{message}\n\n5. NEG -Testing 'POST', wrong input file"
     msg = test_post_modelinfer_inputdata_data4()
     message = f"{message}\n{msg}"
@@ -519,5 +598,6 @@ def run_tests(RETRAIN=False):
     msg = test_post_modelinfer_inputdata_data3()
     message = f"{message}\n{msg}"
     return message
+
 # MESSAGE= run_tests()
 # print(MESSAGE)

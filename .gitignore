@@ -113,3 +113,4 @@ _.short*
 *.ini
 *.pytest_cache
 *__pycache__
+*.sh
